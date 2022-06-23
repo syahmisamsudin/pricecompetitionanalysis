@@ -1,0 +1,31 @@
+import requests
+Shopee_url = 'https://shopee.com.my'
+keyword_search = 'Nescafe Gold refill 170g'
+headers = {
+ ‘User-Agent’: ‘Chrome’,
+ ‘Referer’: ‘{}search?keyword={}’.format(Shopee_url, keyword_search)
+}
+url = ‘https://shopee.com.my/api/v2/search_items/?by=relevancy&keyword={}&limit=100&newest=0&order=desc&page_type=search'.format(keyword_search)
+# Shopee API request
+r = requests.get(url, headers = headers).json()
+# Shopee scraping script
+titles_list = []
+prices_list = []
+for item in r['items']:
+    titles_list.append(item['name'])
+    prices_list.append(item['price_min'])
+    
+Shopee = pd.DataFrame(zip(titles_list, prices_list), columns=[‘ItemName’, ‘Price’])
+
+# Remove the ‘RM’ string from Price and change column type to float
+dfS[‘Price’] = dfS[‘Price’] / 100000
+# Remove false entries i.e. those which are not actually Nescafe Gold Refill 170g
+dfS = dfS[dfS[‘ItemName’].str.contains(‘170g’) == True] # Poor search function Shopee!!!
+# Some of the items are actually x2 packs. Remove them too
+dfS = dfS[dfS[‘ItemName’].str.contains(‘[2x\s]{3}|twin’, flags=re.IGNORECASE, regex=True) == False]
+
+# Add column [‘Platform’] for each platforms
+dfS[‘Platform’] = ‘Shopee’
+
+print(df.groupby([‘Platform’]).describe())
+
