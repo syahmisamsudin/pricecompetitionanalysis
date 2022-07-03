@@ -29,3 +29,4 @@ dfS[‘Platform’] = ‘Shopee’
 
 print(df.groupby([‘Platform’]).describe())
 
+df.to_csv('shopee_price.csv')
